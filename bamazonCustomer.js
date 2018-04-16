@@ -1,30 +1,31 @@
 
-var products = require("./products.js")
+var products = require("./products.js");
+var inquirer = require("inquirer");
 
 
 
+viewbamazonProducts(startShopping);
 
+function startShopping() {
+    console.log("Let's shop");
+    inquirer.prompt([{
+        type: "input",
+        name: "itemID",
+        message: "Please type item id you want to purchase\n"
 
-viewbamazonProducts();
+    },
+    {
+        type: "input",
+        name: "itemQty",
+        message: "Please enter quanity of the  item id you want to purchase\n"
+    }]).then(function (answer) {
+        //console.log(answer.itemQty);
+        products.getProductDetail(answer.itemID, answer.itemQty);
 
-// function startShopping() {
-//     console.log("Let's shop");
-//     inquirer.prompt([{
-//         type: "input",
-//         name: "itemID",
-//         message: "Please type item id you want to purchase\n"
-
-//     }]).then(function (answer) {
-//         console.log(answer.itemID);
-//     })
-// }
-
-function viewbamazonProducts() {
-
-    products.getProducts();
-   
-    //startShopping();
-
-
-
+    })
 }
+
+function viewbamazonProducts(callback) {
+    products.getProducts(callback);
+}
+

@@ -15,12 +15,23 @@ module.exports = function Connection(database) {
 
 
     this.getConnection = function () {
+       // console.log(this.dbConnection.state)
 
-        this.dbConnection.connect(function (err) {
-            if (err) throw err;
-           // return this.connection;
-        })
+        if (this.dbConnection.state === "disconnected") {
 
+            this.dbConnection.connect(function (err) {
+                if (err) throw err;
+                // return this.connection;
+
+            })
+        }
+
+    }
+
+    this.endConnection = function () {
+           this.dbConnection.end(function(err){
+                if(err) throw err;
+            }) 
     }
 
 
