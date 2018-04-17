@@ -120,8 +120,10 @@ exports.getProductDetail = function (id, qty, flag) {
             exports.updateInventory(id, res[0].stock_quantity, qty,0, flag);
         }
         else {
+            var product_sales =0;
             if (res[0].stock_quantity >= qty) {
                 var t = new Table;
+                product_sales = parseFloat(res[0].product_sales) + qty,parseFloat(res[0].price) * parseInt(qty)
                 t.cell("Product Id", res[0].item_id);
                 t.cell("Product Name", res[0].product_name);
                 t.cell("Total", parseFloat(res[0].price) * parseInt(qty));
@@ -130,7 +132,7 @@ exports.getProductDetail = function (id, qty, flag) {
                 console.log(t.toString());
                 console.log("Thank you for your order.");
 
-                exports.updateInventory(id, res[0].stock_quantity, qty,parseFloat(res[0].price) * parseInt(qty), flag);
+                exports.updateInventory(id, res[0].stock_quantity,product_sales , flag);
 
             }
             else {

@@ -16,7 +16,7 @@ function start() {
         //console.log(answer);
         switch (answer.menu) {
             case "View Product Sales by Department":
-                departments.getDepartments();
+                departments.getProductSalesByDept();
                 break;
             case "Create New Department":
                 addNewDept();
