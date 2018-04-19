@@ -1,5 +1,6 @@
 var inquirer = require("inquirer");
 var products = require("./products.js")
+var clear = require("clear");
 
 
 start();
@@ -20,7 +21,7 @@ function updateProduct() {
 
     ]).then(function (product) {
 
-        products.getProductDetail(product.productId, product.productQty, true);
+        products.getProductDetail(product.productId, product.productQty, true,start);
 
     })
 
@@ -50,28 +51,30 @@ function addNewProduct() {
         }
     ]).then(function (newProduct) {
 
-        products.createProduct(newProduct.productName, newProduct.productPrice, newProduct.productDept, newProduct.productQty);
+        products.createProduct(newProduct.productName, newProduct.productPrice, newProduct.productDept, newProduct.productQty,start);
 
     })
 
 }
 function start() {
+    //clear();
     inquirer.prompt([
         {
             type: "list",
             name: "menu",
-            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"],
+            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product", "Exit"],
             message: "Please select option"
 
         }
     ]).then(function (answer) {
         //console.log(answer);
+        clear();
         switch (answer.menu) {
             case "View Products for Sale":
-                products.getProducts();
+                products.getProducts(start);
                 break;
             case "View Low Inventory":
-                products.getLowInventory(5);
+                products.getLowInventory(5, start);
                 break;
             case "Add to Inventory":
                 products.getProducts(updateProduct)
@@ -79,8 +82,12 @@ function start() {
             case "Add New Product":
                 addNewProduct();
                 break;
+            case "Exit":
+                process.exit();
             default:
                 break;
         }
+
+
     })
 }

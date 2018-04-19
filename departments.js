@@ -4,7 +4,7 @@ var connection = new mySqlConnection("bamazon");
 var Table = require("easy-table");
 
 /**Create new department */
-exports.createDepartment = function (dept_name, over_head_costs) {
+exports.createDepartment = function (dept_name, over_head_costs,callback) {
     var sql = "INSERT INTO departments SET?";
     connection.getConnection();
     connection.dbConnection.query(sql, {
@@ -12,13 +12,17 @@ exports.createDepartment = function (dept_name, over_head_costs) {
         over_head_costs: over_head_costs
     }, function (err, res) {
         if (err) throw err
-        exports.getDepartments();
+        exports.getDepartments(callback);
+        if (callback) {
+
+            return callback(null)
+        }
     })
 
 }
 
 
-exports.getDepartments = function () {
+exports.getDepartments = function (callback) {
     var sql = "SELECT * FROM departments";
     connection.getConnection();
     connection.dbConnection.query(sql, function (err, res) {
@@ -31,13 +35,17 @@ exports.getDepartments = function () {
             t.newRow();
         });
         console.log(t.toString());
+        if (callback) {
+
+            return callback(null)
+        }
 
     })
 
 
 }
 
-exports.getProductSalesByDept=function(){
+exports.getProductSalesByDept=function(callback){
     var sql = "select d.department_id,d.department_name,d.over_head_costs,sum(p.product_sales) as product_sales,(sum(p.product_sales) - d.over_head_costs) as total_profit from products p inner join departments d on p.department_name = d.department_name  group by d.department_name";
     connection.getConnection();
     connection.dbConnection.query(sql, function (err, res) {
@@ -52,6 +60,10 @@ exports.getProductSalesByDept=function(){
             t.newRow();
         });
         console.log(t.toString());
+        if (callback) {
+
+            return callback(null)
+        }
 
     })
 

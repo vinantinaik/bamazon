@@ -1,6 +1,7 @@
 var inquirer = require("inquirer");
-var departments = require("./departments.js")
-
+var departments = require("./departments.js");
+var clear = require("clear");
+clear();
 start();
 
 function start() {
@@ -8,18 +9,22 @@ function start() {
         {
             type: "list",
             name: "menu",
-            choices: ["View Product Sales by Department", "Create New Department"],
+            choices: ["View Product Sales by Department", "Create New Department", "Exit"],
             message: "Please select option"
 
         }
     ]).then(function (answer) {
         //console.log(answer);
+        clear();
         switch (answer.menu) {
             case "View Product Sales by Department":
-                departments.getProductSalesByDept();
+                departments.getProductSalesByDept(start);
                 break;
             case "Create New Department":
                 addNewDept();
+                break;
+            case "Exit":
+                process.exit();
                 break;
             default:
                 break;
@@ -42,7 +47,7 @@ function addNewDept() {
 
     ]).then(function (newDept) {
 
-        departments.createDepartment(newDept.deptName, newDept.overHeadCosts);
+        departments.createDepartment(newDept.deptName, newDept.overHeadCosts,start);
 
     })
 

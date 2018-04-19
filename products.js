@@ -7,7 +7,7 @@ var Table = require("easy-table");
 
 /**Create new product */
 
-exports.createProduct = function (product_name, price, dept, stock_quantity) {
+exports.createProduct = function (product_name, price, dept, stock_quantity,callback) {
     var sql = "INSERT INTO products SET?";
     connection.getConnection();
     connection.dbConnection.query(sql, {
@@ -17,7 +17,11 @@ exports.createProduct = function (product_name, price, dept, stock_quantity) {
         stock_quantity: stock_quantity
     }, function (err, res) {
         if (err) throw err
-        exports.getProducts();
+        exports.getProducts(callback);
+        if (callback) {
+
+            return callback(null)
+        }
     })
 
 }
@@ -39,7 +43,7 @@ exports.getProducts = function (callback) {
             t.newRow();
         });
         console.log(t.toString());
-       // connection.endConnection();
+        // connection.endConnection();
 
         if (callback) {
 
@@ -52,7 +56,7 @@ exports.getProducts = function (callback) {
 }
 
 /** Update inventory */
-exports.updateInventory = function (id, oroginalQty, qty, product_sales, addFlag) {
+exports.updateInventory = function (id, oroginalQty, qty, product_sales, addFlag,callback) {
 
     var finalQty = 0
 
@@ -75,13 +79,17 @@ exports.updateInventory = function (id, oroginalQty, qty, product_sales, addFlag
         }
     ], function (err, res) {
         if (err) throw err;
+        if (callback) {
+
+            return callback(null);
+        }
 
 
     });
 }
 
 /**ReadLow inventrory */
-exports.getLowInventory = function (qty) {
+exports.getLowInventory = function (qty, callback) {
     // console.log(id,qty);
     var sql = "SELECT * FROM products WHERE stock_quantity < 6";
     connection.getConnection();
@@ -98,13 +106,17 @@ exports.getLowInventory = function (qty) {
                 t.newRow();
             });
             console.log(t.toString());
+            if (callback) {
+
+                return callback(null);
+            }
         });
 
 
 }
 
 /** Read products Detail*/
-exports.getProductDetail = function (id, qty, flag) {
+exports.getProductDetail = function (id, qty, flag, callback) {
     // console.log(id,qty);
     var sql = "SELECT * FROM products WHERE?";
     connection.getConnection();
@@ -115,18 +127,17 @@ exports.getProductDetail = function (id, qty, flag) {
 
         if (flag) {
 
-            exports.updateInventory(id, res[0].stock_quantity, qty, 0, flag);
+            exports.updateInventory(id, res[0].stock_quantity, qty, 0, flag, callback);
         }
         else {
             var product_sales = 0;
             if (res[0].stock_quantity >= qty) {
                 var t = new Table;
-                if (res[0].product_sales !== null)
-                {
+                if (res[0].product_sales !== null) {
                     product_sales = parseFloat(res[0].product_sales) + parseFloat(res[0].price) * parseInt(qty);
                 }
-                else{
-                    product_sales =  parseFloat(res[0].price) * parseInt(qty);
+                else {
+                    product_sales = parseFloat(res[0].price) * parseInt(qty);
                 }
                 t.cell("Product Id", res[0].item_id);
                 t.cell("Product Name", res[0].product_name);
@@ -136,17 +147,25 @@ exports.getProductDetail = function (id, qty, flag) {
                 console.log(t.toString());
                 console.log("Thank you for your order.");
 
-                exports.updateInventory(id, res[0].stock_quantity,qty, product_sales, flag);
-               
+                exports.updateInventory(id, res[0].stock_quantity, qty, product_sales, flag, callback);
+                if (callback) {
+
+                    return callback(null);
+                }
+
 
             }
             else {
                 console.log("Sorry , we do not have this item in the stock");
-               
+                if (callback) {
+
+                    return callback(null);
+                }
+
             }
         }
 
-
+       
 
     });
 
