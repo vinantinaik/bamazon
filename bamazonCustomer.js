@@ -3,11 +3,38 @@ var products = require("./products.js");
 var inquirer = require("inquirer");
 
 
+shoppingOptions();
 
-viewbamazonProducts(startShopping);
+
+
+
+function shoppingOptions() {
+    console.log("Let's shop");
+    inquirer.prompt([{
+        type: "list",
+        name: "shoppingChoices",
+        choices: ["View Products", "Buy Products"],
+        message: "What would you like to do"
+
+    }]).then(function (response) {
+        if (response.shoppingChoices === "View Products") {
+            products.getProducts(shoppingOptions);
+        }
+        else {
+            viewbamazonProducts(startShopping);
+
+        }
+
+
+    })
+
+}
+
+
 
 function startShopping() {
-    console.log("Let's shop");
+
+
     inquirer.prompt([{
         type: "input",
         name: "itemID",
@@ -21,6 +48,7 @@ function startShopping() {
     }]).then(function (answer) {
         //console.log(answer.itemQty);
         products.getProductDetail(answer.itemID, answer.itemQty);
+
 
     })
 }

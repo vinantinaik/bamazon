@@ -39,9 +39,8 @@ exports.getProducts = function (callback) {
             t.newRow();
         });
         console.log(t.toString());
-        // connection.endConnection();
+       // connection.endConnection();
 
-        // console.log("I am in second function"); 
         if (callback) {
 
             return callback(null)
@@ -52,6 +51,7 @@ exports.getProducts = function (callback) {
 
 }
 
+/** Update inventory */
 exports.updateInventory = function (id, oroginalQty, qty, product_sales, addFlag) {
 
     var finalQty = 0
@@ -80,13 +80,11 @@ exports.updateInventory = function (id, oroginalQty, qty, product_sales, addFlag
     });
 }
 
-/**Low inventrory */
+/**ReadLow inventrory */
 exports.getLowInventory = function (qty) {
     // console.log(id,qty);
     var sql = "SELECT * FROM products WHERE stock_quantity < 6";
     connection.getConnection();
-
-
     connection.dbConnection.query(sql,
         function (err, res) {
             if (err) throw err;
@@ -105,7 +103,7 @@ exports.getLowInventory = function (qty) {
 
 }
 
-/** Read products */
+/** Read products Detail*/
 exports.getProductDetail = function (id, qty, flag) {
     // console.log(id,qty);
     var sql = "SELECT * FROM products WHERE?";
@@ -117,13 +115,19 @@ exports.getProductDetail = function (id, qty, flag) {
 
         if (flag) {
 
-            exports.updateInventory(id, res[0].stock_quantity, qty,0, flag);
+            exports.updateInventory(id, res[0].stock_quantity, qty, 0, flag);
         }
         else {
-            var product_sales =0;
+            var product_sales = 0;
             if (res[0].stock_quantity >= qty) {
                 var t = new Table;
-                product_sales = parseFloat(res[0].product_sales) + qty,parseFloat(res[0].price) * parseInt(qty)
+                if (res[0].product_sales !== null)
+                {
+                    product_sales = parseFloat(res[0].product_sales) + parseFloat(res[0].price) * parseInt(qty);
+                }
+                else{
+                    product_sales =  parseFloat(res[0].price) * parseInt(qty);
+                }
                 t.cell("Product Id", res[0].item_id);
                 t.cell("Product Name", res[0].product_name);
                 t.cell("Total", parseFloat(res[0].price) * parseInt(qty));
@@ -132,11 +136,13 @@ exports.getProductDetail = function (id, qty, flag) {
                 console.log(t.toString());
                 console.log("Thank you for your order.");
 
-                exports.updateInventory(id, res[0].stock_quantity,product_sales , flag);
+                exports.updateInventory(id, res[0].stock_quantity,qty, product_sales, flag);
+               
 
             }
             else {
                 console.log("Sorry , we do not have this item in the stock");
+               
             }
         }
 
